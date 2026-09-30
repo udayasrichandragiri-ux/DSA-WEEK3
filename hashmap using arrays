@@ -1,0 +1,89 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class HashMap {
+private:
+    static const int SIZE = 10;
+
+    string keys[SIZE];
+    string values[SIZE];
+    bool occupied[SIZE];
+
+    int hashFunction(string key) {
+        int hash = 0;
+
+        for (char c : key)
+            hash += c;
+
+        return hash % SIZE;
+    }
+
+public:
+    HashMap() {
+        for (int i = 0; i < SIZE; i++)
+            occupied[i] = false;
+    }
+
+    void insert(string key, string value) {
+        int index = hashFunction(key);
+
+        while (occupied[index]) {
+            if (keys[index] == key) {
+                values[index] = value;
+                return;
+            }
+
+            index = (index + 1) % SIZE;
+        }
+
+        keys[index] = key;
+        values[index] = value;
+        occupied[index] = true;
+    }
+
+    string get(string key) {
+        int index = hashFunction(key);
+        int start = index;
+
+        while (occupied[index]) {
+            if (keys[index] == key)
+                return values[index];
+
+            index = (index + 1) % SIZE;
+
+            if (index == start)
+                break;
+        }
+
+        return "Not Found";
+    }
+
+    void display() {
+        cout << "\nHash Table:\n";
+
+        for (int i = 0; i < SIZE; i++) {
+            if (occupied[i])
+                cout << i << " : "
+                     << keys[i] << " -> "
+                     << values[i] << endl;
+            else
+                cout << i << " : Empty" << endl;
+        }
+    }
+};
+
+int main() {
+    HashMap map;
+
+    map.insert("name", "Udayasri");
+    map.insert("age", "21");
+    map.insert("course", "C++");
+
+    cout << "Name: " << map.get("name") << endl;
+    cout << "Age: " << map.get("age") << endl;
+
+    map.display();
+
+    return 0;
+}

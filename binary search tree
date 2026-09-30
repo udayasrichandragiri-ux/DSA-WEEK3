@@ -1,0 +1,125 @@
+#include <iostream>
+using namespace std;
+
+class BST {
+private:
+    struct Node {
+        int data;
+        Node* left;
+        Node* right;
+
+        Node(int value) {
+            data = value;
+            left = nullptr;
+            right = nullptr;
+        }
+    };
+
+    Node* root;
+
+    Node* insert(Node* node, int value) {
+        if (node == nullptr)
+            return new Node(value);
+
+        if (value < node->data)
+            node->left = insert(node->left, value);
+        else if (value > node->data)
+            node->right = insert(node->right, value);
+
+        return node;
+    }
+
+    bool search(Node* node, int value) {
+        if (node == nullptr)
+            return false;
+
+        if (node->data == value)
+            return true;
+
+        if (value < node->data)
+            return search(node->left, value);
+
+        return search(node->right, value);
+    }
+
+    void inorder(Node* node) {
+        if (node != nullptr) {
+            inorder(node->left);
+            cout << node->data << " ";
+            inorder(node->right);
+        }
+    }
+
+    void preorder(Node* node) {
+        if (node != nullptr) {
+            cout << node->data << " ";
+            preorder(node->left);
+            preorder(node->right);
+        }
+    }
+
+    void postorder(Node* node) {
+        if (node != nullptr) {
+            postorder(node->left);
+            postorder(node->right);
+            cout << node->data << " ";
+        }
+    }
+
+public:
+    BST() {
+        root = nullptr;
+    }
+
+    void insert(int value) {
+        root = insert(root, value);
+    }
+
+    bool search(int value) {
+        return search(root, value);
+    }
+
+    void inorder() {
+        inorder(root);
+    }
+
+    void preorder() {
+        preorder(root);
+    }
+
+    void postorder() {
+        postorder(root);
+    }
+};
+
+int main() {
+    BST tree;
+
+    tree.insert(50);
+    tree.insert(30);
+    tree.insert(70);
+    tree.insert(20);
+    tree.insert(40);
+    tree.insert(60);
+    tree.insert(80);
+
+    cout << "Search 40: ";
+    cout << (tree.search(40) ? "Found" : "Not Found") << endl;
+
+    cout << "Search 90: ";
+    cout << (tree.search(90) ? "Found" : "Not Found") << endl;
+
+    cout << "Inorder: ";
+    tree.inorder();
+    cout << endl;
+
+    cout << "Preorder: ";
+    tree.preorder();
+    cout << endl;
+
+    cout << "Postorder: ";
+    tree.postorder();
+    cout << endl;
+
+    return 0;
+}

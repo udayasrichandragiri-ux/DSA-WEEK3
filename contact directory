@@ -1,0 +1,180 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class ContactDirectory {
+private:
+    struct Node {
+        string name;
+        string phone;
+
+        Node* left;
+        Node* right;
+
+        Node(string n, string p) {
+            name = n;
+            phone = p;
+            left = nullptr;
+            right = nullptr;
+        }
+    };
+
+    Node* root;
+
+    Node* insert(Node* node, string name, string phone) {
+        if (node == nullptr)
+            return new Node(name, phone);
+
+        if (name < node->name) {
+            node->left = insert(node->left, name, phone);
+        }
+        else if (name > node->name) {
+            node->right = insert(node->right, name, phone);
+        }
+        else {
+            // Update phone number if name already exists
+            node->phone = phone;
+        }
+
+        return node;
+    }
+
+    Node* search(Node* node, string name) {
+        if (node == nullptr)
+            return nullptr;
+
+        if (node->name == name)
+            return node;
+
+        if (name < node->name)
+            return search(node->left, name);
+
+        return search(node->right, name);
+    }
+
+    Node* findMinimum(Node* node) {
+        while (node->left != nullptr)
+            node = node->left;
+
+        return node;
+    }
+
+    Node* remove(Node* node, string name) {
+        if (node == nullptr)
+            return nullptr;
+
+        if (name < node->name) {
+            node->left = remove(node->left, name);
+        }
+        else if (name > node->name) {
+            node->right = remove(node->right, name);
+        }
+        else {
+
+            // No child
+            if (node->left == nullptr &&
+                node->right == nullptr) {
+
+                delete node;
+                return nullptr;
+            }
+
+            // Only right child
+            if (node->left == nullptr) {
+                Node* temp = node->right;
+                delete node;
+                return temp;
+            }
+
+            // Only left child
+            if (node->right == nullptr) {
+                Node* temp = node->left;
+                delete node;
+                return temp;
+            }
+
+            // Two children
+            Node* successor = findMinimum(node->right);
+
+            node->name = successor->name;
+            node->phone = successor->phone;
+
+            node->right = remove(node->right,
+                                 successor->name);
+        }
+
+        return node;
+    }
+
+    void inorder(Node* node) {
+        if (node != nullptr) {
+            inorder(node->left);
+
+            cout << node->name
+                 << " : "
+                 << node->phone
+                 << endl;
+
+            inorder(node->right);
+        }
+    }
+
+public:
+    ContactDirectory() {
+        root = nullptr;
+    }
+
+    void insert(string name, string phone) {
+        root = insert(root, name, phone);
+    }
+
+    void search(string name) {
+        Node* result = search(root, name);
+
+        if (result != nullptr) {
+            cout << "Contact Found!" << endl;
+            cout << "Name: " << result->name << endl;
+            cout << "Phone: " << result->phone << endl;
+        }
+        else {
+            cout << "Contact Not Found!" << endl;
+        }
+    }
+
+    void remove(string name) {
+        root = remove(root, name);
+    }
+
+    void display() {
+        cout << "\nContacts Alphabetically:\n";
+        inorder(root);
+    }
+};
+
+int main() {
+
+    ContactDirectory directory;
+
+    // Insert contacts
+    directory.insert("Ravi", "9876543210");
+    directory.insert("Anil", "9123456789");
+    directory.insert("Priya", "9988776655");
+    directory.insert("Kiran", "9000011111");
+    directory.insert("Sneha", "9111122222");
+
+    // Display alphabetically
+    directory.display();
+
+    // Search
+    cout << "\nSearching for Priya:\n";
+    directory.search("Priya");
+
+    // Delete
+    cout << "\nDeleting Kiran...\n";
+    directory.remove("Kiran");
+
+    // Display again
+    directory.display();
+
+    return 0;
+}
